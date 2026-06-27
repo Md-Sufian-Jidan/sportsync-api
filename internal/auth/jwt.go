@@ -19,7 +19,7 @@ type JWTClaims struct {
 }
 
 type JWTService interface {
-	GenerateToken(userId uint, email string, name string) (string, error)
+	GenerateToken(userId uint, email string, name string, role string) (string, error)
 	ValidateToken(tokenStr string) (*JWTClaims, error)
 }
 
@@ -40,13 +40,15 @@ func NewJWTService(secretKey string) JWTService {
 		tokenDuration: defaultTokenDuration,
 	}
 }
-func (js *jwtService) GenerateToken(userId uint, email string, name string) (string, error) {
+
+func (js *jwtService) GenerateToken(userId uint, email string, name string, role string) (string, error) {
 
 	// create claims
 	claims := JWTClaims{
 		UserID: userId,
 		Name:   name,
 		Email:  email,
+		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(js.tokenDuration)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -54,9 +56,9 @@ func (js *jwtService) GenerateToken(userId uint, email string, name string) (str
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims) // create token with claims
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	tokenString, err := token.SignedString([]byte(js.secretKey)) // sign token with secret key
+	tokenString, err := token.SignedString([]byte(js.secretKey))
 	if err != nil {
 		return "", err
 	}

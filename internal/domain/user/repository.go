@@ -31,7 +31,6 @@ func (r repository) CreateUser(user *User) error {
 		}
 		return result.Error
 	}
-
 	return nil
 }
 
@@ -44,6 +43,5 @@ func (r repository) GetUserByEmail(email string) (*User, error) {
 		}
 		return nil, result.Error
 	}
-
 	return &user, nil
 }

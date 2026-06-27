@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"sportsync-api/internal/auth"
 	"strings"
@@ -19,7 +20,10 @@ func CheckAuth(jwtService auth.JWTService) echo.MiddlewareFunc {
 				})
 			}
 
-			parts := strings.Split(authHeader, "")
+			fmt.Println("authheader", authHeader)
+
+			parts := strings.Split(authHeader, " ")
+			fmt.Println("parts", parts)
 			if len(parts) != 2 || parts[0] != "Bearer" {
 				return c.JSON(http.StatusUnauthorized, map[string]string{
 					"error": "Invalid authorization header format",
@@ -29,13 +33,16 @@ func CheckAuth(jwtService auth.JWTService) echo.MiddlewareFunc {
 			token := parts[1]
 			claims, err := jwtService.ValidateToken(token)
 
+			fmt.Println("claims", claims)
+			fmt.Println("err", err)
+
 			if err != nil {
 				return c.JSON(http.StatusUnauthorized, map[string]string{
 					"errro": "Invalid or expired token",
 				})
 			}
 
-			c.Set("user_id", claims.ID)
+			c.Set("user_id", claims.UserID)
 			c.Set("user_name", claims.Name)
 			c.Set("user_email", claims.Email)
 			c.Set("user_role", claims.Role)

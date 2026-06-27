@@ -24,17 +24,17 @@ func (h *handler) CreateUser(c *echo.Context) error {
 
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, httpResponse.Error{
-			Code:    http.StatusBadRequest,
+			Success: false,
 			Message: "Invalid request payload",
-			Details: err.Error(),
+			Errors:  err.Error(),
 		})
 	}
 
 	if err := c.Validate(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, httpResponse.Error{
-			Code:    http.StatusBadRequest,
+			Success: false,
 			Message: "Validation failed",
-			Details: err.Error(),
+			Errors:  err.Error(),
 		})
 	}
 
@@ -43,38 +43,41 @@ func (h *handler) CreateUser(c *echo.Context) error {
 
 		if errors.Is(err, ErrorAlreadyExist) {
 			return c.JSON(http.StatusConflict, httpResponse.Error{
-				Code:    http.StatusConflict,
+				Success: false,
 				Message: "Failed to create User",
-				Details: err.Error(),
+				Errors:  err.Error(),
 			})
 		}
 
 		return c.JSON(http.StatusInternalServerError, httpResponse.Error{
-			Code:    http.StatusInternalServerError,
+			Success: false,
 			Message: "Failed to create user",
-			Details: err.Error(),
+			Errors:  err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusCreated, response)
-
+	return c.JSON(http.StatusCreated, httpResponse.Success{
+		Success: true,
+		Message: "User registered successfully",
+		Data:    response,
+	})
 }
 func (h *handler) LoginUser(c *echo.Context) error {
 	var req dto.LoginRequest // input
 
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, httpResponse.Error{
-			Code:    http.StatusBadRequest,
+			Success: false,
 			Message: "Invalid request payload",
-			Details: err.Error(),
+			Errors:  err.Error(),
 		})
 	}
 
 	if err := c.Validate(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, httpResponse.Error{
-			Code:    http.StatusBadRequest,
+			Success: false,
 			Message: "Validation failed",
-			Details: err.Error(),
+			Errors:  err.Error(),
 		})
 	}
 
@@ -83,20 +86,24 @@ func (h *handler) LoginUser(c *echo.Context) error {
 	if err != nil {
 		if errors.Is(err, ErrInvalidCredentials) {
 			return c.JSON(http.StatusUnauthorized, httpResponse.Error{
-				Code:    http.StatusUnauthorized,
+				Success: false,
 				Message: "Cannot login user",
-				Details: err.Error(),
+				Errors:  err.Error(),
 			})
 		}
 
 		return c.JSON(http.StatusInternalServerError, httpResponse.Error{
-			Code:    http.StatusInternalServerError,
+			Success: false,
 			Message: "Failed to login user",
-			Details: err.Error(),
+			Errors:  err.Error(),
 		})
 	}
 
-	return c.JSON(http.StatusOK, response)
+	return c.JSON(http.StatusOK, httpResponse.Success{
+		Success: true,
+		Message: "User logged in successfully",
+		Data:    response,
+	})
 
 }
 
@@ -104,18 +111,22 @@ func (h *handler) GetMe(c *echo.Context) error {
 	userID, ok := c.Get("user_id").(uint)
 	if !ok {
 		return c.JSON(http.StatusUnauthorized, httpResponse.Error{
-			Code:    http.StatusUnauthorized,
+			Success: false,
 			Message: "Cannot get user information",
-			Details: "missing user id in context",
+			Errors:  "missing user id in context",
 		})
 	}
-
 	email, _ := c.Get("user_email").(string)
 	name, _ := c.Get("user_name").(string)
-
-	return c.JSON(http.StatusOK, dto.Response{
-		ID:    userID,
-		Name:  name,
-		Email: email,
+	role, _ := c.Get("user_role").(string)
+	return c.JSON(http.StatusOK, httpResponse.Success{
+		Success: true,
+		Message: "User information fetched successfully",
+		Data: dto.Response{
+			ID:    userID,
+			Name:  name,
+			Email: email,
+			Role:  role,
+		},
 	})
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"sportsync-api/internal/config"
+	"sportsync-api/internal/domain/admin"
 	"sportsync-api/internal/domain/user"
 
 	"github.com/go-playground/validator/v10"
@@ -26,7 +27,7 @@ func (cv *CustomValidator) Validate(i any) error {
 func Start(db *gorm.DB, cfg *config.Config) {
 	e := echo.New()
 
-	db.AutoMigrate(&user.User{})
+	db.AutoMigrate(&user.User{}, &admin.ParkingZone{})
 	e.Validator = &CustomValidator{validator: validator.New()}
 	e.Use(middleware.RequestLogger())
 
@@ -35,7 +36,7 @@ func Start(db *gorm.DB, cfg *config.Config) {
 	})
 
 	user.RegisterRoutes(e, db, cfg)
-
+admin.RegisterRoutes(e, db, cfg)
 	port := fmt.Sprintf(":%s", cfg.Port)
 	fmt.Println("port", port)
 	if err := e.Start(port); err != nil {

@@ -18,14 +18,12 @@ func NewService(repo Repository, jwtService auth.JWTService) *service {
 }
 
 func (s *service) CreateUser(req dto.CreateRequest) (*dto.Response, error) {
-
 	user := User{
 		Name:  req.Name,
 		Email: req.Email,
 		Role:  req.Role,
 	}
 
-	// hash password and set to user.Password
 	err := user.hashPassword(req.Password)
 	if err != nil {
 		return nil, err
@@ -45,7 +43,6 @@ func (s *service) CreateUser(req dto.CreateRequest) (*dto.Response, error) {
 	}
 
 	return &response, nil
-
 }
 
 func (s *service) LoginUser(req dto.LoginRequest) (*dto.Response, error) {
@@ -60,7 +57,7 @@ func (s *service) LoginUser(req dto.LoginRequest) (*dto.Response, error) {
 	if err != nil {
 		return nil, ErrInvalidCredentials
 	}
-	token, err := s.jwtService.GenerateToken(user.ID, user.Email, user.Name)
+	token, err := s.jwtService.GenerateToken(user.ID, user.Email, user.Name, user.Role)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate token: %w", err)
 	}
