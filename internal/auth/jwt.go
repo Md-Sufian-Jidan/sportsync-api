@@ -2,20 +2,19 @@ package auth
 
 import (
 	"fmt"
+	"sportsync-api/internal/config"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
-const (
-	jwtSecretKey         = "your_secret"
-	defaultTokenDuration = 24 * time.Hour // 7 days
-)
+const defaultTokenDuration = 24 * time.Hour
 
 type JWTClaims struct {
 	UserID uint   `json:"user_id"`
 	Name   string `json:"name"`
 	Email  string `json:"email"`
+	Role   string `json:"role"`
 	jwt.RegisteredClaims
 }
 
@@ -30,9 +29,10 @@ type jwtService struct {
 }
 
 func NewJWTService(secretKey string) JWTService {
+	cfg := config.LoadEnv()
 
 	if secretKey == "" {
-		secretKey = jwtSecretKey
+		secretKey = cfg.JwtSecret
 	}
 
 	return &jwtService{
@@ -50,7 +50,7 @@ func (js *jwtService) GenerateToken(userId uint, email string, name string) (str
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(js.tokenDuration)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			Issuer:    "gotickets",
+			Issuer:    "sportsync",
 		},
 	}
 
