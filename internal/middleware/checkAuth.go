@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v5"
 )
 
-func checkAuth(jwtService auth.JWTService) echo.MiddlewareFunc {
+func CheckAuth(jwtService auth.JWTService) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 
 		return func(c *echo.Context) error {

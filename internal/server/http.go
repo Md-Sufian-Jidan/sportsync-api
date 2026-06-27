@@ -3,8 +3,8 @@ package server
 import (
 	"fmt"
 	"net/http"
-	"os/user"
 	"sportsync-api/internal/config"
+	"sportsync-api/internal/domain/user"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v5"
@@ -33,6 +33,8 @@ func Start(db *gorm.DB, cfg *config.Config) {
 	e.GET("/", func(c *echo.Context) error {
 		return c.String(http.StatusOK, "SportSync server is running successfully!")
 	})
+
+	user.RegisterRoutes(e, db, cfg)
 
 	port := fmt.Sprintf(":%s", cfg.Port)
 	fmt.Println("port", port)
