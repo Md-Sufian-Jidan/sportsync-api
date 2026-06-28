@@ -51,3 +51,18 @@ func CheckAuth(jwtService auth.JWTService) echo.MiddlewareFunc {
 		}
 	}
 }
+
+func RequireRole(role string) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c *echo.Context) error {
+			userRole, ok := c.Get("user_role").(string)
+			if !ok || userRole != role {
+				return c.JSON(http.StatusForbidden, map[string]string{
+					"error": "Forbidden: insufficient permissions",
+				})
+			}
+			return next(c)
+		}
+	}
+}
+
