@@ -89,6 +89,17 @@ func (h *handler) LoginUser(c echo.Context) error {
 	})
 }
 
+// GetMe godoc
+//
+//	@Summary		Get authenticated user
+//	@Description	Returns the currently authenticated user's information
+//	@Tags			Authentication
+//	@Security		BearerAuth
+//	@Produce		json
+//	@Success		200	{object}	httpResponse.Success{data=dto.Response}
+//	@Failure		401	{object}	httpResponse.Error
+//	@Router			/api/v1/auth/me [get]
+
 func (h *handler) GetMe(c echo.Context) error {
 	userID, ok := c.Get("user_id").(uint)
 	if !ok {

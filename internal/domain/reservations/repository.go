@@ -42,14 +42,14 @@ func (r *repository) CreateReservation(reservation *Reservation) error {
 
 		var zone admin.ParkingZone
 		// 1. Lock the row!
-		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(&zone, reservation.ZoneId).Error; err != nil {
+		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(&zone, reservation.ZoneID).Error; err != nil {
 			return err
 		}
 
 		// 2. Count current 'active' reservations for this zone
 		var activeCount int64
 		if err := tx.Model(&Reservation{}).
-			Where("zone_id = ? AND status = ?", reservation.ZoneId, StatusActive).
+			Where("zone_id = ? AND status = ?", reservation.ZoneID, StatusActive).
 			Count(&activeCount).Error; err != nil {
 			return err
 		}

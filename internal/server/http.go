@@ -15,9 +15,9 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"gorm.io/gorm"
 
-	 _ "spotsync-api/docs"
+	_ "sportsync-api/docs"
 
-    echoSwagger "github.com/swaggo/echo-swagger"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 type CustomValidator struct {
@@ -94,10 +94,14 @@ func Start(db *gorm.DB, cfg *config.Config) {
 	e.Use(middleware.RequestLogger())
 
 	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "SportSync server is running successfully!")
+		return c.JSON(http.StatusOK, "SportSync server is running successfully!")
 	})
 	// swagger implementation
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
+
+	e.GET("/swagger", func(c echo.Context) error {
+		return c.Redirect(302, "/swagger/index.html")
+	})
 
 	user.RegisterRoutes(e, db, cfg)
 	admin.RegisterRoutes(e, db, cfg)

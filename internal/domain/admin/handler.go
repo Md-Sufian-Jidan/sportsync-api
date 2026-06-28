@@ -20,7 +20,7 @@ func NewHandler(service *service) *handler {
 // CreateParkingZone godoc
 //
 // @Summary Create Parking Zone
-// @Description Create a new parking zone
+// @Description Create a new parking zone (Admin only)
 // @Tags Parking Zones
 // @Security BearerAuth
 // @Accept json
@@ -29,6 +29,8 @@ func NewHandler(service *service) *handler {
 // @Success 201 {object} httpResponse.Success
 // @Failure 400 {object} httpResponse.Error
 // @Failure 401 {object} httpResponse.Error
+// @Failure 403 {object} httpResponse.Error
+// @Failure 500 {object} httpResponse.Error
 // @Router /zones [post]
 
 func (h *handler) CreateParkingZone(c echo.Context) error {
@@ -53,6 +55,16 @@ func (h *handler) CreateParkingZone(c echo.Context) error {
 	})
 }
 
+// GetParkingZones godoc
+//
+// @Summary Get All Parking Zones
+// @Description Retrieve all parking zones
+// @Tags Parking Zones
+// @Produce json
+// @Success 200 {object} httpResponse.Success
+// @Failure 500 {object} httpResponse.Error
+// @Router /zones [get]
+
 func (h *handler) GetParkingZones(c echo.Context) error {
 	parkingZones, err := h.service.GetAllParkingZones()
 	if err != nil {
@@ -65,6 +77,19 @@ func (h *handler) GetParkingZones(c echo.Context) error {
 		Data:    parkingZones,
 	})
 }
+
+// GetParkingZoneByID godoc
+//
+// @Summary Get Parking Zone
+// @Description Retrieve a parking zone by ID
+// @Tags Parking Zones
+// @Produce json
+// @Param id path int true "Parking Zone ID"
+// @Success 200 {object} httpResponse.Success
+// @Failure 400 {object} httpResponse.Error
+// @Failure 404 {object} httpResponse.Error
+// @Failure 500 {object} httpResponse.Error
+// @Router /zones/{id} [get]
 
 func (h *handler) GetParkingZoneByID(c echo.Context) error {
 	idParam, err := strconv.Atoi(c.Param("id"))
@@ -83,6 +108,24 @@ func (h *handler) GetParkingZoneByID(c echo.Context) error {
 		Data:    response,
 	})
 }
+
+// UpdateParkingZone godoc
+//
+// @Summary Update Parking Zone
+// @Description Update an existing parking zone (Admin only)
+// @Tags Parking Zones
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "Parking Zone ID"
+// @Param request body dto.UpdateRequest true "Parking Zone"
+// @Success 200 {object} httpResponse.Success
+// @Failure 400 {object} httpResponse.Error
+// @Failure 401 {object} httpResponse.Error
+// @Failure 403 {object} httpResponse.Error
+// @Failure 404 {object} httpResponse.Error
+// @Failure 500 {object} httpResponse.Error
+// @Router /zones/{id} [put]
 
 func (h *handler) UpdateParkingZone(c echo.Context) error {
 	idParam, err := strconv.Atoi(c.Param("id"))
@@ -110,6 +153,22 @@ func (h *handler) UpdateParkingZone(c echo.Context) error {
 		Data:    parkingZone,
 	})
 }
+
+// DeleteParkingZone godoc
+//
+// @Summary Delete Parking Zone
+// @Description Delete a parking zone (Admin only)
+// @Tags Parking Zones
+// @Security BearerAuth
+// @Produce json
+// @Param id path int true "Parking Zone ID"
+// @Success 200 {object} httpResponse.Success
+// @Failure 400 {object} httpResponse.Error
+// @Failure 401 {object} httpResponse.Error
+// @Failure 403 {object} httpResponse.Error
+// @Failure 404 {object} httpResponse.Error
+// @Failure 500 {object} httpResponse.Error
+// @Router /zones/{id} [delete]
 
 func (h *handler) DeleteParkingZone(c echo.Context) error {
 	idParam, err := strconv.Atoi(c.Param("id"))

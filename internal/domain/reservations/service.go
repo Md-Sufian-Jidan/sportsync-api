@@ -19,8 +19,8 @@ func NewService(repo Repository, jwtService auth.JWTService) *service {
 
 func (s *service) CreateReservation(userID uint, req dto.CreateRequest) (*dto.Response, error) {
 	res := Reservation{
-		UserId:       userID,
-		ZoneId:       req.ZoneID,
+		UserID:       userID,
+		ZoneID:       req.ZoneID,
 		LicensePlate: req.LicensePlate,
 		Status:       StatusActive,
 	}
@@ -30,8 +30,8 @@ func (s *service) CreateReservation(userID uint, req dto.CreateRequest) (*dto.Re
 	}
 	response := dto.Response{
 		ID:           res.ID,
-		UserID:       res.UserId,
-		ZoneID:       res.ZoneId,
+		UserID:       res.UserID,
+		ZoneID:       res.ZoneID,
 		LicensePlate: res.LicensePlate,
 		Status:       res.Status,
 		CreatedAt:    res.CreatedAt,
@@ -50,8 +50,8 @@ func (s *service) GetAllReservations() ([]dto.Response, error) {
 	for _, reservation := range reservations {
 		res := dto.Response{
 			ID:           reservation.ID,
-			UserID:       reservation.UserId,
-			ZoneID:       reservation.ZoneId,
+			UserID:       reservation.UserID,
+			ZoneID:       reservation.ZoneID,
 			LicensePlate: reservation.LicensePlate,
 			Status:       reservation.Status,
 			CreatedAt:    reservation.CreatedAt,
@@ -83,8 +83,8 @@ func (s *service) GetReservationByID(id uint) (*dto.Response, error) {
 
 	response := dto.Response{
 		ID:           reservation.ID,
-		UserID:       reservation.UserId,
-		ZoneID:       reservation.ZoneId,
+		UserID:       reservation.UserID,
+		ZoneID:       reservation.ZoneID,
 		LicensePlate: reservation.LicensePlate,
 		Status:       reservation.Status,
 		CreatedAt:    reservation.CreatedAt,
@@ -123,7 +123,7 @@ func (s *service) GetMyReservations(userID uint) ([]dto.MyReservationResponse, e
 				Name: res.Zone.Name,
 				Type: res.Zone.Type,
 			},
-			CreatedAt:    res.CreatedAt,
+			CreatedAt: res.CreatedAt,
 		})
 	}
 	return responses, nil
@@ -135,7 +135,7 @@ func (s *service) CancelReservation(id uint, userID uint, userRole string) error
 		return err
 	}
 
-	if userRole != "admin" && reservation.UserId != userID {
+	if userRole != "admin" && reservation.UserID != userID {
 		return ErrForbidden
 	}
 
@@ -157,8 +157,8 @@ func (s *service) UpdateReservation(id uint, req *dto.UpdateRequest) (*dto.Respo
 
 	response := dto.Response{
 		ID:           reservation.ID,
-		UserID:       reservation.UserId,
-		ZoneID:       reservation.ZoneId,
+		UserID:       reservation.UserID,
+		ZoneID:       reservation.ZoneID,
 		LicensePlate: reservation.LicensePlate,
 		Status:       reservation.Status,
 		CreatedAt:    reservation.CreatedAt,

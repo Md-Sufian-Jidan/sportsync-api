@@ -7,21 +7,22 @@ import (
 
 func main() {
 	// @title SpotSync API
-// @version 1.0
-// @description SpotSync Parking Management API
-// @termsOfService http://swagger.io/terms/
+	// @version 1.0
+	// @description SpotSync Parking Management API
+	// @termsOfService http://swagger.io/terms/
 
-// @contact.name SpotSync Team
-// @contact.email support@spotsync.com
+	// @contact.name SpotSync Team
+	// @contact.email support@spotsync.com
 
-// @license.name MIT
+	// @license.name MIT
 
-// @host localhost:8000
-// @BasePath /api/v1
+	// @host localhost:8000
+	// @BasePath /api/v1
 
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
+	// @securityDefinitions.apikey BearerAuth
+	// @in header
+	// @name Authorization
+
 	// Load the config
 	cfg := config.LoadEnv()
 	// Connect to the database
