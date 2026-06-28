@@ -5,7 +5,7 @@ import (
 	"sportsync-api/internal/config"
 	"sportsync-api/internal/middleware"
 
-	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 

@@ -21,5 +21,4 @@ func LoadEnv() *Config {
 		Dsn:       os.Getenv("DSN"),
 		JwtSecret: os.Getenv("JWT_SECRET"),
 	}
-
 }

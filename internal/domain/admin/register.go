@@ -5,7 +5,7 @@ import (
 	"sportsync-api/internal/config"
 	"sportsync-api/internal/middleware"
 
-	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
@@ -17,9 +17,24 @@ func RegisterRoutes(e *echo.Echo, db *gorm.DB, cfg *config.Config) {
 
 	api := e.Group("/api/v1")
 
-	api.POST("/zones", adminHandler.CreateParkingZone, middleware.CheckAuth(jwtService))
+	api.POST(
+		"/zones",
+		adminHandler.CreateParkingZone,
+		middleware.CheckAuth(jwtService),
+		middleware.RequireRole("admin"),
+	)
 	api.GET("/zones", adminHandler.GetParkingZones)
 	api.GET("/zones/:id", adminHandler.GetParkingZoneByID)
-	api.PUT("/zones/:id", adminHandler.UpdateParkingZone, middleware.CheckAuth(jwtService))
-	api.DELETE("/zones/:id", adminHandler.DeleteParkingZone, middleware.CheckAuth(jwtService))
+	api.PUT(
+		"/zones/:id",
+		adminHandler.UpdateParkingZone,
+		middleware.CheckAuth(jwtService),
+		middleware.RequireRole("admin"),
+	)
+	api.DELETE(
+		"/zones/:id",
+		adminHandler.DeleteParkingZone,
+		middleware.CheckAuth(jwtService),
+		middleware.RequireRole("admin"),
+	)
 }

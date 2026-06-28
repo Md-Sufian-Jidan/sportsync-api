@@ -4,29 +4,31 @@ import (
 	"fmt"
 	"net/http"
 	"sportsync-api/internal/auth"
+	"sportsync-api/internal/httpResponse"
 	"strings"
 
-	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v4"
 )
 
 func CheckAuth(jwtService auth.JWTService) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 
-		return func(c *echo.Context) error {
+		return func(c echo.Context) error {
 			authHeader := c.Request().Header.Get("Authorization")
 			if authHeader == "" {
-				return c.JSON(http.StatusUnauthorized, map[string]string{
-					"error": "Missing authorization header",
+				return c.JSON(http.StatusUnauthorized, httpResponse.Error{
+					Success: false,
+					Message: "Unauthorized",
+					Errors:  "Missing authorization header",
 				})
 			}
 
-			fmt.Println("authheader", authHeader)
-
 			parts := strings.Split(authHeader, " ")
-			fmt.Println("parts", parts)
 			if len(parts) != 2 || parts[0] != "Bearer" {
-				return c.JSON(http.StatusUnauthorized, map[string]string{
-					"error": "Invalid authorization header format",
+				return c.JSON(http.StatusUnauthorized, httpResponse.Error{
+					Success: false,
+					Message: "Unauthorized",
+					Errors:  "Invalid authorization header format",
 				})
 			}
 
@@ -37,8 +39,10 @@ func CheckAuth(jwtService auth.JWTService) echo.MiddlewareFunc {
 			fmt.Println("err", err)
 
 			if err != nil {
-				return c.JSON(http.StatusUnauthorized, map[string]string{
-					"errro": "Invalid or expired token",
+				return c.JSON(http.StatusUnauthorized, httpResponse.Error{
+					Success: false,
+					Message: "Unauthorized",
+					Errors:  "Invalid or expired token",
 				})
 			}
 
@@ -54,15 +58,16 @@ func CheckAuth(jwtService auth.JWTService) echo.MiddlewareFunc {
 
 func RequireRole(role string) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c *echo.Context) error {
+		return func(c echo.Context) error {
 			userRole, ok := c.Get("user_role").(string)
 			if !ok || userRole != role {
-				return c.JSON(http.StatusForbidden, map[string]string{
-					"error": "Forbidden: insufficient permissions",
+				return c.JSON(http.StatusForbidden, httpResponse.Error{
+					Success: false,
+					Message: "Forbidden",
+					Errors:  "Forbidden: insufficient permissions",
 				})
 			}
 			return next(c)
 		}
 	}
 }
-

@@ -1,14 +1,12 @@
 package reservations
 
 import (
-	"errors"
 	"net/http"
 	"sportsync-api/internal/domain/reservations/dto"
 	"sportsync-api/internal/httpResponse"
 	"strconv"
 
-	"github.com/labstack/echo/v5"
-	"gorm.io/gorm"
+	"github.com/labstack/echo/v4"
 )
 
 type handler struct {
@@ -19,47 +17,38 @@ func NewHandler(service *service) *handler {
 	return &handler{service: service}
 }
 
-func (h *handler) CreateReservation(c *echo.Context) error {
+// CreateReservation godoc
+//
+// @Summary Reserve Parking Spot
+// @Description Reserve a parking spot
+// @Tags Reservations
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param request body dto.CreateRequest true "Reservation"
+// @Success 201 {object} httpResponse.Success
+// @Failure 400 {object} httpResponse.Error
+// @Failure 409 {object} httpResponse.Error
+// @Router /reservations [post]
+
+func (h *handler) CreateReservation(c echo.Context) error {
 	userID, ok := c.Get("user_id").(uint)
 	if !ok {
-		return c.JSON(http.StatusUnauthorized, httpResponse.Error{
-			Success: false,
-			Message: "Unauthorized",
-			Errors:  "missing user id in context",
-		})
+		return echo.NewHTTPError(http.StatusUnauthorized, "missing user id in context")
 	}
 
 	var req dto.CreateRequest
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, httpResponse.Error{
-			Success: false,
-			Message: "Invalid request payload",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	if err := c.Validate(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, httpResponse.Error{
-			Success: false,
-			Message: "Validation failed",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	reservation, err := h.service.CreateReservation(userID, req)
 	if err != nil {
-		if errors.Is(err, ErrZoneFull) {
-			return c.JSON(http.StatusBadRequest, httpResponse.Error{
-				Success: false,
-				Message: "Parking zone is full",
-				Errors:  err.Error(),
-			})
-		}
-		return c.JSON(http.StatusInternalServerError, httpResponse.Error{
-			Success: false,
-			Message: "Failed to create reservation",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	return c.JSON(http.StatusCreated, httpResponse.Success{
@@ -69,23 +58,15 @@ func (h *handler) CreateReservation(c *echo.Context) error {
 	})
 }
 
-func (h *handler) GetMyReservations(c *echo.Context) error {
+func (h *handler) GetMyReservations(c echo.Context) error {
 	userID, ok := c.Get("user_id").(uint)
 	if !ok {
-		return c.JSON(http.StatusUnauthorized, httpResponse.Error{
-			Success: false,
-			Message: "Unauthorized",
-			Errors:  "missing user id in context",
-		})
+		return echo.NewHTTPError(http.StatusUnauthorized, "missing user id in context")
 	}
 
 	reservations, err := h.service.GetMyReservations(userID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, httpResponse.Error{
-			Success: false,
-			Message: "Failed to get reservations",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	return c.JSON(http.StatusOK, httpResponse.Success{
@@ -95,47 +76,21 @@ func (h *handler) GetMyReservations(c *echo.Context) error {
 	})
 }
 
-func (h *handler) CancelReservation(c *echo.Context) error {
+func (h *handler) CancelReservation(c echo.Context) error {
 	idParam, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, httpResponse.Error{
-			Success: false,
-			Message: "Invalid reservation ID",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	userID, ok := c.Get("user_id").(uint)
 	if !ok {
-		return c.JSON(http.StatusUnauthorized, httpResponse.Error{
-			Success: false,
-			Message: "Unauthorized",
-			Errors:  "missing user id in context",
-		})
+		return echo.NewHTTPError(http.StatusUnauthorized, "missing user id in context")
 	}
 	userRole, _ := c.Get("user_role").(string)
 
 	err = h.service.CancelReservation(uint(idParam), userID, userRole)
 	if err != nil {
-		if errors.Is(err, ErrForbidden) {
-			return c.JSON(http.StatusForbidden, httpResponse.Error{
-				Success: false,
-				Message: "Forbidden",
-				Errors:  err.Error(),
-			})
-		}
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, httpResponse.Error{
-				Success: false,
-				Message: "Reservation not found",
-				Errors:  err.Error(),
-			})
-		}
-		return c.JSON(http.StatusInternalServerError, httpResponse.Error{
-			Success: false,
-			Message: "Failed to cancel reservation",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	return c.JSON(http.StatusOK, httpResponse.Success{
@@ -144,14 +99,10 @@ func (h *handler) CancelReservation(c *echo.Context) error {
 	})
 }
 
-func (h *handler) GetAllReservations(c *echo.Context) error {
+func (h *handler) GetAllReservations(c echo.Context) error {
 	reservations, err := h.service.GetAllReservations()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, httpResponse.Error{
-			Success: false,
-			Message: "Failed to get reservations",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	return c.JSON(http.StatusOK, httpResponse.Success{
@@ -161,30 +112,15 @@ func (h *handler) GetAllReservations(c *echo.Context) error {
 	})
 }
 
-func (h *handler) GetReservationByID(c *echo.Context) error {
+func (h *handler) GetReservationByID(c echo.Context) error {
 	idParam, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, httpResponse.Error{
-			Success: false,
-			Message: "Invalid reservation ID",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	response, err := h.service.GetReservationByID(uint(idParam))
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, httpResponse.Error{
-				Success: false,
-				Message: "Reservation not found",
-				Errors:  err.Error(),
-			})
-		}
-		return c.JSON(http.StatusInternalServerError, httpResponse.Error{
-			Success: false,
-			Message: "Failed to get reservation",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	return c.JSON(http.StatusOK, httpResponse.Success{
@@ -194,47 +130,24 @@ func (h *handler) GetReservationByID(c *echo.Context) error {
 	})
 }
 
-func (h *handler) UpdateReservation(c *echo.Context) error {
+func (h *handler) UpdateReservation(c echo.Context) error {
 	idParam, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, httpResponse.Error{
-			Success: false,
-			Message: "Invalid parking zone ID",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	var req dto.UpdateRequest
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, httpResponse.Error{
-			Success: false,
-			Message: "Invalid request payload",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	if err := c.Validate(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, httpResponse.Error{
-			Success: false,
-			Message: "Validation failed",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	reservation, err := h.service.UpdateReservation(uint(idParam), &req)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, httpResponse.Error{
-				Success: false,
-				Message: "Reservation not found",
-				Errors:  err.Error(),
-			})
-		}
-		return c.JSON(http.StatusInternalServerError, httpResponse.Error{
-			Success: false,
-			Message: "Failed to update reservation",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	return c.JSON(http.StatusOK, httpResponse.Success{
@@ -244,30 +157,15 @@ func (h *handler) UpdateReservation(c *echo.Context) error {
 	})
 }
 
-func (h *handler) DeleteReservation(c *echo.Context) error {
+func (h *handler) DeleteReservation(c echo.Context) error {
 	idParam, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, httpResponse.Error{
-			Success: false,
-			Message: "Invalid reservation ID",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	err = h.service.DeleteReservation(uint(idParam))
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return c.JSON(http.StatusNotFound, httpResponse.Error{
-				Success: false,
-				Message: "Reservation not found",
-				Errors:  err.Error(),
-			})
-		}
-		return c.JSON(http.StatusInternalServerError, httpResponse.Error{
-			Success: false,
-			Message: "Failed to delete reservation",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	return c.JSON(http.StatusOK, httpResponse.Success{

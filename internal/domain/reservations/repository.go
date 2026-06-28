@@ -9,6 +9,7 @@ import (
 )
 
 var ErrZoneFull = errors.New("parking zone is at full capacity")
+var ErrDuplicateLicensePlate = errors.New("license plate already has an active reservation")
 
 type repository struct {
 	db *gorm.DB
@@ -29,6 +30,16 @@ func NewRepository(db *gorm.DB) *repository {
 
 func (r *repository) CreateReservation(reservation *Reservation) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
+		// Check for duplicate active license plate reservation first
+		var activeLicenseCount int64
+		if err := tx.Model(&Reservation{}).
+			Where("license_plate = ? AND status = ?", reservation.LicensePlate, StatusActive).Error; err != nil {
+			return err
+		}
+		if activeLicenseCount > 0 {
+			return ErrDuplicateLicensePlate
+		}
+
 		var zone admin.ParkingZone
 		// 1. Lock the row!
 		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(&zone, reservation.ZoneId).Error; err != nil {

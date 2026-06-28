@@ -30,7 +30,7 @@ func (r repository) CreateParkingZone(parkingZone *ParkingZone) error {
 
 func (r repository) GetAllParkingZones() ([]*ParkingZone, error) {
 	var parkingZones []*ParkingZone
-	err := r.db.Find(&parkingZones).Error
+		err := r.db.Find(&parkingZones).Error
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func (r repository) GetAllParkingZones() ([]*ParkingZone, error) {
 
 func (r repository) GetParkingZoneByID(id uint) (*ParkingZone, error) {
 	var parkingZone ParkingZone
-	err := r.db.First(&parkingZone, id).Error
+	err := r.db.Find(&parkingZone, id).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrParkingZoneNotFound

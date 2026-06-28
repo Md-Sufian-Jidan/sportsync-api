@@ -31,25 +31,25 @@ func (s *service) CreateParkingZone(req dto.CreateRequest) (*dto.Response, error
 		Type:          parkingZone.Type,
 		TotalCapacity: parkingZone.TotalCapacity,
 		PricePerHour:  parkingZone.PricePerHour,
-		CreatedAt:     parkingZone.CreatedAt.String(),
-		UpdatedAt:     parkingZone.UpdatedAt.String(),
+		CreatedAt:     parkingZone.CreatedAt,
+		UpdatedAt:     parkingZone.UpdatedAt,
 	}
 	return &response, nil
 }
 
-func (s *service) GetParkingZoneByID(id uint) (*dto.Response, error) {
+func (s *service) GetParkingZoneByID(id uint) (*dto.GetResponse, error) {
 	parkingZone, err := s.repo.GetParkingZoneByID(id)
 	if err != nil {
 		return nil, err
 	}
-	response := dto.Response{
-		ID:            parkingZone.ID,
-		Name:          parkingZone.Name,
-		Type:          parkingZone.Type,
-		TotalCapacity: parkingZone.TotalCapacity,
-		PricePerHour:  parkingZone.PricePerHour,
-		CreatedAt:     parkingZone.CreatedAt.String(),
-		UpdatedAt:     parkingZone.UpdatedAt.String(),
+	response := dto.GetResponse{
+		ID:             parkingZone.ID,
+		Name:           parkingZone.Name,
+		Type:           parkingZone.Type,
+		TotalCapacity:  parkingZone.TotalCapacity,
+		AvailableSpots: parkingZone.AvailableSpots,
+		PricePerHour:   parkingZone.PricePerHour,
+		CreatedAt:      parkingZone.CreatedAt,
 	}
 	return &response, nil
 }
@@ -74,8 +74,8 @@ func (s *service) UpdateParkingZone(id uint, req dto.UpdateRequest) (*dto.Respon
 		Type:          parkingZone.Type,
 		TotalCapacity: parkingZone.TotalCapacity,
 		PricePerHour:  parkingZone.PricePerHour,
-		CreatedAt:     parkingZone.CreatedAt.String(),
-		UpdatedAt:     parkingZone.UpdatedAt.String(),
+		CreatedAt:     parkingZone.CreatedAt,
+		UpdatedAt:     parkingZone.UpdatedAt,
 	}
 	return &response, nil
 }
@@ -88,21 +88,21 @@ func (s *service) DeleteParkingZone(id uint) error {
 	return nil
 }
 
-func (s *service) GetAllParkingZones() ([]dto.Response, error) {
+func (s *service) GetAllParkingZones() ([]dto.GetResponse, error) {
 	parkingZones, err := s.repo.GetAllParkingZones()
 	if err != nil {
 		return nil, err
 	}
-	var responses []dto.Response
+	var responses []dto.GetResponse
 	for _, parkingZone := range parkingZones {
-		responses = append(responses, dto.Response{
-			ID:            parkingZone.ID,
-			Name:          parkingZone.Name,
-			Type:          parkingZone.Type,
-			TotalCapacity: parkingZone.TotalCapacity,
-			PricePerHour:  parkingZone.PricePerHour,
-			CreatedAt:     parkingZone.CreatedAt.String(),
-			UpdatedAt:     parkingZone.UpdatedAt.String(),
+		responses = append(responses, dto.GetResponse{
+			ID:             parkingZone.ID,
+			Name:           parkingZone.Name,
+			Type:           parkingZone.Type,
+			TotalCapacity:  parkingZone.TotalCapacity,
+			AvailableSpots: parkingZone.AvailableSpots,
+			PricePerHour:   parkingZone.PricePerHour,
+			CreatedAt:      parkingZone.CreatedAt,
 		})
 	}
 	return responses, nil

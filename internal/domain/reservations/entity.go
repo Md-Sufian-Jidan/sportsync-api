@@ -15,10 +15,10 @@ const (
 
 type Reservation struct {
 	gorm.Model
-	UserId       uint              `json:"user_id" gorm:"not null"`
-	User         user.User         `gorm:"foreignKey:UserId"`
-	ZoneId       uint              `json:"zone_id" gorm:"not null"`
-	Zone         admin.ParkingZone `gorm:"foreignKey:ZoneId"`
+	UserID       uint              `json:"user_id" gorm:"not null"`
+	User         user.User         `gorm:"foreignKey:UserID"`
+	ZoneID       uint              `json:"zone_id" gorm:"not null"`
+	Zone         admin.ParkingZone `gorm:"foreignKey:ZoneID"`
 	LicensePlate string            `json:"license_plate" gorm:"size:15;not null"`
 	Status       string            `json:"status" gorm:"size:20;not null;default:active"`
 }

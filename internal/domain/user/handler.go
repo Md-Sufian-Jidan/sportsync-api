@@ -1,12 +1,11 @@
 package user
 
 import (
-	"errors"
 	"net/http"
 	"sportsync-api/internal/domain/user/dto"
 	"sportsync-api/internal/httpResponse"
 
-	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v4"
 )
 
 type handler struct {
@@ -19,41 +18,33 @@ func NewHandler(service *service) *handler {
 	}
 }
 
-func (h *handler) CreateUser(c *echo.Context) error {
+// Register godoc
+//
+// @Summary Register User
+// @Description Register a new user
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param request body dto.CreateRequest true "Register Request"
+// @Success 201 {object} httpResponse.Success
+// @Failure 400 {object} httpResponse.Error
+// @Failure 409 {object} httpResponse.Error
+// @Router /auth/register [post]
+
+func (h *handler) CreateUser(c echo.Context) error {
 	var req dto.CreateRequest // input
 
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, httpResponse.Error{
-			Success: false,
-			Message: "Invalid request payload",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	if err := c.Validate(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, httpResponse.Error{
-			Success: false,
-			Message: "Validation failed",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	response, err := h.service.CreateUser(req)
 	if err != nil {
-
-		if errors.Is(err, ErrorAlreadyExist) {
-			return c.JSON(http.StatusConflict, httpResponse.Error{
-				Success: false,
-				Message: "Failed to create User",
-				Errors:  err.Error(),
-			})
-		}
-
-		return c.JSON(http.StatusInternalServerError, httpResponse.Error{
-			Success: false,
-			Message: "Failed to create user",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	return c.JSON(http.StatusCreated, httpResponse.Success{
@@ -62,59 +53,46 @@ func (h *handler) CreateUser(c *echo.Context) error {
 		Data:    response,
 	})
 }
-func (h *handler) LoginUser(c *echo.Context) error {
+
+// LoginUser godoc
+//
+// @Summary Login User
+// @Description Login with email and password
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param request body dto.LoginRequest true "Login Request"
+// @Success 200 {object} httpResponse.Success
+// @Failure 401 {object} httpResponse.Error
+// @Router /auth/login [post]
+
+func (h *handler) LoginUser(c echo.Context) error {
 	var req dto.LoginRequest // input
 
 	if err := c.Bind(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, httpResponse.Error{
-			Success: false,
-			Message: "Invalid request payload",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	if err := c.Validate(&req); err != nil {
-		return c.JSON(http.StatusBadRequest, httpResponse.Error{
-			Success: false,
-			Message: "Validation failed",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	response, err := h.service.LoginUser(req)
-
 	if err != nil {
-		if errors.Is(err, ErrInvalidCredentials) {
-			return c.JSON(http.StatusUnauthorized, httpResponse.Error{
-				Success: false,
-				Message: "Cannot login user",
-				Errors:  err.Error(),
-			})
-		}
-
-		return c.JSON(http.StatusInternalServerError, httpResponse.Error{
-			Success: false,
-			Message: "Failed to login user",
-			Errors:  err.Error(),
-		})
+		return err
 	}
 
 	return c.JSON(http.StatusOK, httpResponse.Success{
 		Success: true,
-		Message: "User logged in successfully",
+		Message: "Login successful",
 		Data:    response,
 	})
-
 }
 
-func (h *handler) GetMe(c *echo.Context) error {
+func (h *handler) GetMe(c echo.Context) error {
 	userID, ok := c.Get("user_id").(uint)
 	if !ok {
-		return c.JSON(http.StatusUnauthorized, httpResponse.Error{
-			Success: false,
-			Message: "Cannot get user information",
-			Errors:  "missing user id in context",
-		})
+		return echo.NewHTTPError(http.StatusUnauthorized, "missing user id in context")
 	}
 	email, _ := c.Get("user_email").(string)
 	name, _ := c.Get("user_name").(string)

@@ -1,0 +1,19 @@
+basePath: /api/v1
+host: localhost:8000
+info:
+  contact:
+    email: support@spotsync.com
+    name: SpotSync Team
+  description: SpotSync Parking Management API
+  license:
+    name: MIT
+  termsOfService: http://swagger.io/terms/
+  title: SpotSync API
+  version: "1.0"
+paths: {}
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -1,0 +1,26 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "SpotSync Parking Management API",
+        "title": "SpotSync API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "SpotSync Team",
+            "email": "support@spotsync.com"
+        },
+        "license": {
+            "name": "MIT"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8000",
+    "basePath": "/api/v1",
+    "paths": {},
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

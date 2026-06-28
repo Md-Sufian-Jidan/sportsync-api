@@ -18,10 +18,14 @@ func NewService(repo Repository, jwtService auth.JWTService) *service {
 }
 
 func (s *service) CreateUser(req dto.CreateRequest) (*dto.Response, error) {
+	role := req.Role
+	if role == "" {
+		role = "driver"
+	}
 	user := User{
 		Name:  req.Name,
 		Email: req.Email,
-		Role:  req.Role,
+		Role:  role,
 	}
 
 	err := user.hashPassword(req.Password)
@@ -39,13 +43,14 @@ func (s *service) CreateUser(req dto.CreateRequest) (*dto.Response, error) {
 		Name:      user.Name,
 		Email:     user.Email,
 		Role:      user.Role,
-		CreatedAt: user.CreatedAt.String(),
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	}
 
 	return &response, nil
 }
 
-func (s *service) LoginUser(req dto.LoginRequest) (*dto.Response, error) {
+func (s *service) LoginUser(req dto.LoginRequest) (*dto.LoginResponse, error) {
 	user, err := s.repo.GetUserByEmail(req.Email)
 	if err != nil {
 		return nil, err
@@ -62,14 +67,13 @@ func (s *service) LoginUser(req dto.LoginRequest) (*dto.Response, error) {
 		return nil, fmt.Errorf("failed to generate token: %w", err)
 	}
 
-	response := dto.Response{
-		ID:        user.ID,
-		Name:      user.Name,
-		Email:     user.Email,
-		Role:      user.Role,
-		Token:     token,
-		CreatedAt: user.CreatedAt.String(),
-	}
-
-	return &response, nil
+	return &dto.LoginResponse{
+		Token: token,
+		User: dto.UserSummary{
+			ID:    user.ID,
+			Name:  user.Name,
+			Email: user.Email,
+			Role:  user.Role,
+		},
+	}, nil
 }

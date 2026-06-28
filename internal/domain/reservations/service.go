@@ -63,7 +63,13 @@ func (s *service) GetAllReservations() ([]dto.Response, error) {
 			Email: reservation.User.Email,
 			Role:  reservation.User.Role,
 		}
-		res.Zone = &reservation.Zone
+		res.Zone = &dto.ZoneResponse{
+			ID:            reservation.Zone.ID,
+			Name:          reservation.Zone.Name,
+			Type:          reservation.Zone.Type,
+			TotalCapacity: reservation.Zone.TotalCapacity,
+			PricePerHour:  reservation.Zone.PricePerHour,
+		}
 		responses = append(responses, res)
 	}
 	return responses, nil
@@ -90,7 +96,13 @@ func (s *service) GetReservationByID(id uint) (*dto.Response, error) {
 		Email: reservation.User.Email,
 		Role:  reservation.User.Role,
 	}
-	response.Zone = &reservation.Zone
+	response.Zone = &dto.ZoneResponse{
+		ID:            reservation.Zone.ID,
+		Name:          reservation.Zone.Name,
+		Type:          reservation.Zone.Type,
+		TotalCapacity: reservation.Zone.TotalCapacity,
+		PricePerHour:  reservation.Zone.PricePerHour,
+	}
 	return &response, nil
 }
 
