@@ -32,7 +32,6 @@ func NewHandler(service *service) *handler {
 // @Failure 403 {object} httpResponse.Error
 // @Failure 500 {object} httpResponse.Error
 // @Router /zones [post]
-
 func (h *handler) CreateParkingZone(c echo.Context) error {
 	var req dto.CreateRequest
 	if err := c.Bind(&req); err != nil {
@@ -64,7 +63,6 @@ func (h *handler) CreateParkingZone(c echo.Context) error {
 // @Success 200 {object} httpResponse.Success
 // @Failure 500 {object} httpResponse.Error
 // @Router /zones [get]
-
 func (h *handler) GetParkingZones(c echo.Context) error {
 	parkingZones, err := h.service.GetAllParkingZones()
 	if err != nil {
@@ -90,7 +88,6 @@ func (h *handler) GetParkingZones(c echo.Context) error {
 // @Failure 404 {object} httpResponse.Error
 // @Failure 500 {object} httpResponse.Error
 // @Router /zones/{id} [get]
-
 func (h *handler) GetParkingZoneByID(c echo.Context) error {
 	idParam, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -126,7 +123,6 @@ func (h *handler) GetParkingZoneByID(c echo.Context) error {
 // @Failure 404 {object} httpResponse.Error
 // @Failure 500 {object} httpResponse.Error
 // @Router /zones/{id} [put]
-
 func (h *handler) UpdateParkingZone(c echo.Context) error {
 	idParam, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -169,7 +165,6 @@ func (h *handler) UpdateParkingZone(c echo.Context) error {
 // @Failure 404 {object} httpResponse.Error
 // @Failure 500 {object} httpResponse.Error
 // @Router /zones/{id} [delete]
-
 func (h *handler) DeleteParkingZone(c echo.Context) error {
 	idParam, err := strconv.Atoi(c.Param("id"))
 	if err != nil {

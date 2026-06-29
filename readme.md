@@ -11,9 +11,9 @@
 | Resource | Link |
 |---|---|
 | 📦 GitHub Repository | [github.com/Md-Sufian-Jidan/sportsync-api](https://github.com/Md-Sufian-Jidan/sportsync-api) |
-| 🌐 Live Deployment | [spotsync-api-eem6.onrender.com](https://sportsync-api-eem6.onrender.com) |
+| 🌐 Live Deployment | [sportsync-api-ayrk.onrender.com](https://sportsync-api-ayrk.onrender.com) |
 | 🎥 Interview Video | [Google Drive](https://drive.google.com/drive/folders/1ADN7_KCpD5SNs5nrM5crc01xsK-nNVs1?usp=drive_link) |
-| 📖 API Docs (Swagger) | `<live-url>/swagger/index.html` |
+| 📖 API Docs (Swagger) | `https://sportsync-api-ayrk.onrender.com/swagger/index.html` |
 
 ---
 
@@ -360,7 +360,13 @@ Create a `.env` file at the project root. All variables below are required.
 | Variable | Example | Description |
 |---|---|---|
 | `PORT` | `8000` | Port the Echo server listens on |
-| `Dsn` | `ep-xxx.us-east-2.aws.neon.tech` | PostgreSQL host |
+| `DATABASE_URL` | `ep-xxx.us-east-2.aws.neon.tech` | PostgreSQL host |
+| `DB_HOST` | `ep-xxx.us-east-2.aws.neon.tech` | PostgreSQL host |
+| `DB_PORT` | `5432` | PostgreSQL port |
+| `DB_USER` | `spotsync_user` | Database username |
+| `DB_PASSWORD` | `your_db_password` | Database password |
+| `DB_NAME` | `spotsync` | Database name |
+| `DB_SSLMODE` | `require` | SSL mode (`require` for NeonDB/Supabase, `disable` for local) |
 | `JWT_SECRET` | `your_super_secret_key` | Secret key used to sign JWTs (keep this long and random) |
 
 

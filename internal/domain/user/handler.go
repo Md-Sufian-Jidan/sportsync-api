@@ -30,7 +30,6 @@ func NewHandler(service *service) *handler {
 // @Failure 400 {object} httpResponse.Error
 // @Failure 409 {object} httpResponse.Error
 // @Router /auth/register [post]
-
 func (h *handler) CreateUser(c echo.Context) error {
 	var req dto.CreateRequest // input
 
@@ -65,7 +64,6 @@ func (h *handler) CreateUser(c echo.Context) error {
 // @Success 200 {object} httpResponse.Success
 // @Failure 401 {object} httpResponse.Error
 // @Router /auth/login [post]
-
 func (h *handler) LoginUser(c echo.Context) error {
 	var req dto.LoginRequest // input
 
@@ -98,8 +96,7 @@ func (h *handler) LoginUser(c echo.Context) error {
 //	@Produce		json
 //	@Success		200	{object}	httpResponse.Success{data=dto.Response}
 //	@Failure		401	{object}	httpResponse.Error
-//	@Router			/api/v1/auth/me [get]
-
+//	@Router			/auth/me [get]
 func (h *handler) GetMe(c echo.Context) error {
 	userID, ok := c.Get("user_id").(uint)
 	if !ok {

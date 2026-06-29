@@ -31,6 +31,18 @@ func (cv *CustomValidator) Validate(i any) error {
 	return nil
 }
 
+// ===============================
+// @title SpotSync Server Health
+// @description Health check endpoint
+// @tags health
+// @produce json
+// @success 200 {string} string "OK"
+// @router / [get]
+// ===============================
+func healthCheck(c echo.Context) error {
+	return c.JSON(http.StatusOK, "SportSync server is running successfully!")
+}
+
 func CustomHTTPErrorHandler(err error, c echo.Context) {
 	if c.Response().Committed {
 		return
@@ -96,12 +108,15 @@ func Start(db *gorm.DB, cfg *config.Config) {
 	e.GET("/", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, "SportSync server is running successfully!")
 	})
-	// swagger implementation
-	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
+	// Swagger
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 	e.GET("/swagger", func(c echo.Context) error {
 		return c.Redirect(302, "/swagger/index.html")
 	})
+
+	// Health endpoint (NOW SWAGGER WILL DETECT IT)
+	e.GET("/health", healthCheck)
 
 	user.RegisterRoutes(e, db, cfg)
 	admin.RegisterRoutes(e, db, cfg)

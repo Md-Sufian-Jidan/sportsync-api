@@ -23,16 +23,19 @@ func CheckAuth(jwtService auth.JWTService) echo.MiddlewareFunc {
 				})
 			}
 
+			var token string
 			parts := strings.Split(authHeader, " ")
-			if len(parts) != 2 || parts[0] != "Bearer" {
+			if len(parts) == 2 && parts[0] == "Bearer" {
+				token = parts[1]
+			} else if len(parts) == 1 {
+				token = parts[0]
+			} else {
 				return c.JSON(http.StatusUnauthorized, httpResponse.Error{
 					Success: false,
 					Message: "Unauthorized",
 					Errors:  "Invalid authorization header format",
 				})
 			}
-
-			token := parts[1]
 			claims, err := jwtService.ValidateToken(token)
 
 			fmt.Println("claims", claims)

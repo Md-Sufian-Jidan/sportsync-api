@@ -32,7 +32,6 @@ func NewHandler(service *service) *handler {
 //	@Failure		409		{object}	httpResponse.Error
 //	@Failure		500		{object}	httpResponse.Error
 //	@Router			/reservations [post]
-
 func (h *handler) CreateReservation(c echo.Context) error {
 	userID, ok := c.Get("user_id").(uint)
 	if !ok {
@@ -70,8 +69,7 @@ func (h *handler) CreateReservation(c echo.Context) error {
 //	@Success		200	{object}	httpResponse.Success{data=[]dto.Response}
 //	@Failure		401	{object}	httpResponse.Error
 //	@Failure		500	{object}	httpResponse.Error
-//	@Router			/api/v1/reservations/my-reservations [get]
-
+//	@Router			/reservations/my-reservations [get]
 func (h *handler) GetMyReservations(c echo.Context) error {
 	userID, ok := c.Get("user_id").(uint)
 	if !ok {
@@ -104,8 +102,7 @@ func (h *handler) GetMyReservations(c echo.Context) error {
 //	@Failure		403	{object}	httpResponse.Error
 //	@Failure		404	{object}	httpResponse.Error
 //	@Failure		500	{object}	httpResponse.Error
-//	@Router			/api/v1/reservations/{id} [delete]
-
+//	@Router			/reservations/{id} [delete]
 func (h *handler) CancelReservation(c echo.Context) error {
 	idParam, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -140,8 +137,7 @@ func (h *handler) CancelReservation(c echo.Context) error {
 //	@Failure		401	{object}	httpResponse.Error
 //	@Failure		403	{object}	httpResponse.Error
 //	@Failure		500	{object}	httpResponse.Error
-//	@Router			/api/v1/reservations [get]
-
+//	@Router			/reservations [get]
 func (h *handler) GetAllReservations(c echo.Context) error {
 	reservations, err := h.service.GetAllReservations()
 	if err != nil {
@@ -168,8 +164,7 @@ func (h *handler) GetAllReservations(c echo.Context) error {
 //	@Failure		401	{object}	httpResponse.Error
 //	@Failure		404	{object}	httpResponse.Error
 //	@Failure		500	{object}	httpResponse.Error
-//	@Router			/api/v1/reservations/{id} [get]
-
+//	@Router			/reservations/{id} [get]
 func (h *handler) GetReservationByID(c echo.Context) error {
 	idParam, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -203,8 +198,7 @@ func (h *handler) GetReservationByID(c echo.Context) error {
 //	@Failure		401		{object}	httpResponse.Error
 //	@Failure		404		{object}	httpResponse.Error
 //	@Failure		500		{object}	httpResponse.Error
-//	@Router			/api/v1/reservations/{id} [put]
-
+//	@Router			/reservations/{id} [put]
 func (h *handler) UpdateReservation(c echo.Context) error {
 	idParam, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
